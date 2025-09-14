@@ -283,8 +283,12 @@ function UILibrary.Load(GUITitle)
 	local TabLibrary = {}
 	function TabLibrary.AddPage(PageTitle, SearchBarIncluded)
     local SearchBarIncluded = (SearchBarIncluded == nil) and true or SearchBarIncluded
-
     TabCount += 1
+
+    -- Wait until MenuBar has a valid size
+    if MenuBar.AbsoluteSize.Y == 0 then
+        MenuBar:GetPropertyChangedSignal("AbsoluteSize"):Wait()
+    end
 
     -- Calculate dynamic tab height
     local totalHeight = MenuBar.AbsoluteSize.Y
@@ -312,6 +316,7 @@ function UILibrary.Load(GUITitle)
     PageButton.TextTransparency = (TabCount == 1) and 0 or 0.5
     PageButton.Parent = PageContainer
 
+    -- Button click logic
     PageButton.MouseButton1Down:Connect(function()
         for _, Button in next, MenuBar:GetChildren() do
             if Button:IsA("GuiObject") and Button.Name ~= "UIListLayout" then
@@ -338,6 +343,7 @@ function UILibrary.Load(GUITitle)
     DisplayPage.Size = UDim2.new(1, 0, 1, 0)
     DisplayPage.Parent = DisplayFrame
 
+    -- Add layout and padding
     local DisplayList = Instance.new("UIListLayout")
     DisplayList.SortOrder = Enum.SortOrder.LayoutOrder
     DisplayList.Padding = UDim.new(0,5)
@@ -357,12 +363,6 @@ function UILibrary.Load(GUITitle)
     DisplayPadding.Parent = DisplayPage
 
     local PageLibrary = {}
-    -- Your PageLibrary functions here (AddButton, AddLabel, AddDropdown, etc.)
-    return PageLibrary
-end
-
-
-		local PageLibrary = {}
 		
 		function PageLibrary.AddButton(Text, Callback, Parent, Underline)
 			local ButtonContainer = Frame()
@@ -686,5 +686,6 @@ end
 end
 
 return UILibrary
+
 
 
