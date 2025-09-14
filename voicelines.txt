@@ -286,20 +286,23 @@ function UILibrary.Load(GUITitle)
 
     TabCount += 1
 
-    local MenuBarHeight = MenuBar.AbsoluteSize.Y
-    local TabHeight = math.floor((MenuBarHeight - (TabCount - 1) * 5) / TabCount) -- dynamic height with spacing
-    if TabHeight < 20 then TabHeight = 20 end -- minimum height
+    -- Calculate dynamic tab height
+    local totalHeight = MenuBar.AbsoluteSize.Y
+    local spacing = 5
+    local tabHeight = math.floor((totalHeight - (TabCount - 1) * spacing) / TabCount)
+    if tabHeight < 20 then tabHeight = 20 end
 
-    -- Update existing tabs to match new height
-    for i, child in next, MenuBar:GetChildren() do
+    -- Resize existing tabs
+    for _, child in next, MenuBar:GetChildren() do
         if child:IsA("GuiObject") and child.Name ~= "UIListLayout" then
-            child.Size = UDim2.new(1,0,0,TabHeight)
+            child.Size = UDim2.new(1, 0, 0, tabHeight)
         end
     end
 
+    -- Create new tab
     local PageContainer = RoundBox(5)
     PageContainer.Name = PageTitle
-    PageContainer.Size = UDim2.new(1,0,0,TabHeight)
+    PageContainer.Size = UDim2.new(1, 0, 0, tabHeight)
     PageContainer.LayoutOrder = TabCount
     PageContainer.ImageColor3 = (TabCount == 1) and Color3.fromRGB(50,50,50) or Color3.fromRGB(40,40,40)
     PageContainer.Parent = MenuBar
@@ -310,29 +313,29 @@ function UILibrary.Load(GUITitle)
     PageButton.Parent = PageContainer
 
     PageButton.MouseButton1Down:Connect(function()
-        spawn(function()
-            for _, Button in next, MenuBar:GetChildren() do
-                if Button:IsA("GuiObject") then
-                    local IsButton = string.find(Button.Name:lower(), PageContainer.Name:lower())
-                    local Button2 = Button:FindFirstChild(Button.Name.."Button")
-                    Tween(Button, {ImageColor3 = IsButton and Color3.fromRGB(50,50,50) or Color3.fromRGB(40,40,40)})
-                    Tween(Button2, {TextTransparency = IsButton and 0 or 0.5})
+        for _, Button in next, MenuBar:GetChildren() do
+            if Button:IsA("GuiObject") and Button.Name ~= "UIListLayout" then
+                local isActive = Button == PageContainer
+                Tween(Button, {ImageColor3 = isActive and Color3.fromRGB(50,50,50) or Color3.fromRGB(40,40,40)})
+                local btn = Button:FindFirstChild(Button.Name.."Button")
+                if btn then
+                    Tween(btn, {TextTransparency = isActive and 0 or 0.5})
                 end
             end
-        end)
-        spawn(function()
-            for _, Display in next, DisplayFrame:GetChildren() do
-                if Display:IsA("GuiObject") then
-                    Display.Visible = string.find(Display.Name:lower(), PageContainer.Name:lower())
-                end
+        end
+
+        for _, Display in next, DisplayFrame:GetChildren() do
+            if Display:IsA("GuiObject") then
+                Display.Visible = Display.Name == PageContainer.Name
             end
-        end)
+        end
     end)
 
+    -- Create display page
     local DisplayPage = ScrollingFrame()
     DisplayPage.Visible = (TabCount == 1)
     DisplayPage.Name = PageTitle
-    DisplayPage.Size = UDim2.new(1,0,1,0)
+    DisplayPage.Size = UDim2.new(1, 0, 1, 0)
     DisplayPage.Parent = DisplayFrame
 
     local DisplayList = Instance.new("UIListLayout")
@@ -353,7 +356,11 @@ function UILibrary.Load(GUITitle)
     DisplayPadding.PaddingRight = UDim.new(0,5)
     DisplayPadding.Parent = DisplayPage
 
-    -- (Keep the rest of your SearchBar, PageLibrary, AddButton, etc. code unchanged)
+    local PageLibrary = {}
+    -- Your PageLibrary functions here (AddButton, AddLabel, AddDropdown, etc.)
+    return PageLibrary
+end
+
 
 		local PageLibrary = {}
 		
@@ -679,4 +686,5 @@ function UILibrary.Load(GUITitle)
 end
 
 return UILibrary
+
 
