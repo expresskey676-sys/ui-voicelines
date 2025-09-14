@@ -206,7 +206,7 @@ function UILibrary.Load(GUITitle)
 	MenuBar.Name = "MenuBar"
 	MenuBar.BackgroundTransparency = 0.7
 	MenuBar.BackgroundColor3 = Color3.fromRGB(20,20,20)
-	MenuBar.Size = UDim2.new(0,100,0,235)
+	MenuBar.Size = UDim2.new(0,100,0,280)
 	MenuBar.Position = UDim2.new(0,5,0,30)
 	MenuBar.CanvasSize = UDim2.new(0,0,0,0)
 	MenuBar.Parent = MainFrame
@@ -702,3 +702,4 @@ function UILibrary.Load(GUITitle)
 end
 
 return UILibrary
+
