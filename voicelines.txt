@@ -282,39 +282,58 @@ function UILibrary.Load(GUITitle)
 	local TabLibrary = {}
 	
 	function TabLibrary.AddPage(PageTitle, SearchBarIncluded)
-		SearchBarIncluded = (SearchBarIncluded == nil) and true or SearchBarIncluded
-		
-		local PageContainer = RoundBox(5)
-		PageContainer.Name = PageTitle
-		PageContainer.Size = UDim2.new(1,0,0,20)
-		PageContainer.LayoutOrder = TabCount
-		PageContainer.ImageColor3 = (TabCount == 0) and Color3.fromRGB(50,50,50) or Color3.fromRGB(40,40,40)
-		PageContainer.Parent = MenuBar
-		
-		local PageButton = TextButton(PageTitle, 14)
-		PageButton.Name = PageTitle.."Button"
-		PageButton.TextTransparency = (TabCount == 0) and 0 or 0.5
-		PageButton.Parent = PageContainer
-		
-		local DisplayPage = ScrollingFrame()
-		DisplayPage.Visible = (TabCount == 0)
-		DisplayPage.Name = PageTitle
-		DisplayPage.Size = UDim2.new(1,0,1,0)
-		DisplayPage.Parent = DisplayFrame
-		
-		TabCount += 1
-		
-		local DisplayList = Instance.new("UIListLayout")
-		DisplayList.SortOrder = Enum.SortOrder.LayoutOrder
-		DisplayList.Padding = UDim.new(0,5)
-		DisplayList.Parent = DisplayPage
-		
-		local DisplayPadding = Instance.new("UIPadding")
-		DisplayPadding.PaddingBottom = UDim.new(0,5)
-		DisplayPadding.PaddingTop = UDim.new(0,5)
-		DisplayPadding.PaddingLeft = UDim.new(0,5)
-		DisplayPadding.PaddingRight = UDim.new(0,5)
-		DisplayPadding.Parent = DisplayPage
+	SearchBarIncluded = (SearchBarIncluded == nil) and true or SearchBarIncluded
+	
+	local PageContainer = RoundBox(5)
+	PageContainer.Name = PageTitle
+	PageContainer.ImageColor3 = (TabCount == 0) and Color3.fromRGB(50,50,50) or Color3.fromRGB(40,40,40)
+	PageContainer.Parent = MenuBar
+	
+	local PageButton = TextButton(PageTitle, 14)
+	PageButton.Name = PageTitle.."Button"
+	PageButton.TextTransparency = (TabCount == 0) and 0 or 0.5
+	PageButton.Parent = PageContainer
+	
+	local DisplayPage = ScrollingFrame()
+	DisplayPage.Visible = (TabCount == 0)
+	DisplayPage.Name = PageTitle
+	DisplayPage.Size = UDim2.new(1,0,1,0)
+	DisplayPage.Parent = DisplayFrame
+	
+	TabCount += 1
+	
+	-- Update all tabs' height dynamically
+	local TotalTabs = TabCount
+	for i, tab in pairs(MenuBar:GetChildren()) do
+		if tab:IsA("GuiObject") then
+			tab.Size = UDim2.new(1,0,0, math.floor((MenuBar.AbsoluteSize.Y - (TotalTabs-1)*5)/TotalTabs))
+		end
+	end
+	
+	-- Update CanvasSize to match total height
+	local function UpdateCanvas()
+		local totalHeight = 0
+		for _, child in pairs(MenuBar:GetChildren()) do
+			if child:IsA("GuiObject") then
+				totalHeight += child.AbsoluteSize.Y + 5
+			end
+		end
+		MenuBar.CanvasSize = UDim2.new(0,0,0,totalHeight)
+	end
+	UpdateCanvas()
+	
+	DisplayList = Instance.new("UIListLayout")
+	DisplayList.SortOrder = Enum.SortOrder.LayoutOrder
+	DisplayList.Padding = UDim.new(0,5)
+	DisplayList.Parent = DisplayPage
+	
+	local DisplayPadding = Instance.new("UIPadding")
+	DisplayPadding.PaddingBottom = UDim.new(0,5)
+	DisplayPadding.PaddingTop = UDim.new(0,5)
+	DisplayPadding.PaddingLeft = UDim.new(0,5)
+	DisplayPadding.PaddingRight = UDim.new(0,5)
+	DisplayPadding.Parent = DisplayPage
+
 		
 		local PageLibrary = {}
 		
@@ -640,4 +659,5 @@ function UILibrary.Load(GUITitle)
 end
 
 return UILibrary
+
 
