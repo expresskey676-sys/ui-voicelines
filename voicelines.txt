@@ -288,6 +288,7 @@ function UILibrary.Load(GUITitle)
 	PageContainer.Name = PageTitle
 	PageContainer.ImageColor3 = (TabCount == 0) and Color3.fromRGB(50,50,50) or Color3.fromRGB(40,40,40)
 	PageContainer.Parent = MenuBar
+	PageContainer.Size = UDim2.new(1,0,0, 30) -- fixed per-tab height
 	
 	local PageButton = TextButton(PageTitle, 14)
 	PageButton.Name = PageTitle.."Button"
@@ -302,25 +303,21 @@ function UILibrary.Load(GUITitle)
 	
 	TabCount += 1
 	
-	-- Update all tabs' height dynamically
-	local TotalTabs = TabCount
-	for i, tab in pairs(MenuBar:GetChildren()) do
-		if tab:IsA("GuiObject") then
-			tab.Size = UDim2.new(1,0,0, math.floor((MenuBar.AbsoluteSize.Y - (TotalTabs-1)*5)/TotalTabs))
-		end
-	end
-	
-	-- Update CanvasSize to match total height
+	-- Update MenuBar canvas size to fit all tabs
 	local function UpdateCanvas()
 		local totalHeight = 0
 		for _, child in pairs(MenuBar:GetChildren()) do
 			if child:IsA("GuiObject") then
-				totalHeight += child.AbsoluteSize.Y + 5
+				totalHeight += child.AbsoluteSize.Y + 5 -- 5 = padding
 			end
 		end
 		MenuBar.CanvasSize = UDim2.new(0,0,0,totalHeight)
 	end
+	
+	-- Use RunService to wait for layout updates before updating CanvasSize
+	RunService.Heartbeat:Wait()
 	UpdateCanvas()
+
 	
 	DisplayList = Instance.new("UIListLayout")
 	DisplayList.SortOrder = Enum.SortOrder.LayoutOrder
@@ -659,5 +656,6 @@ function UILibrary.Load(GUITitle)
 end
 
 return UILibrary
+
 
 
